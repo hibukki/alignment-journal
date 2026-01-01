@@ -60,6 +60,100 @@ class PersonsPublic(SQLModel):
 
 
 # =============================================================================
+# Paper - A submission to the journal
+# =============================================================================
+
+
+class PaperBase(SQLModel):
+    title: str = Field(min_length=1, max_length=500)
+    abstract: str | None = Field(default=None, max_length=10000)
+
+
+class PaperCreate(PaperBase):
+    resubmission_of_paper_id: uuid.UUID | None = None
+
+
+class PaperUpdate(SQLModel):
+    title: str | None = Field(default=None, min_length=1, max_length=500)
+    abstract: str | None = Field(default=None, max_length=10000)
+
+
+class Paper(PaperBase, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    resubmission_of_paper_id: uuid.UUID | None = Field(
+        default=None, foreign_key="paper.id"
+    )
+    versions: list["PaperVersion"] = Relationship(back_populates="paper")
+    authors: list["PaperAuthor"] = Relationship(back_populates="paper")
+
+
+class PaperPublic(PaperBase):
+    id: uuid.UUID
+    created_at: datetime
+    resubmission_of_paper_id: uuid.UUID | None
+
+
+class PapersPublic(SQLModel):
+    data: list[PaperPublic]
+    count: int
+
+
+# =============================================================================
+# PaperVersion - Each revision of a paper
+# =============================================================================
+
+
+class PaperVersionBase(SQLModel):
+    version_number: int = Field(ge=1)
+    pdf_url: str = Field(max_length=2000)
+
+
+class PaperVersionCreate(PaperVersionBase):
+    paper_id: uuid.UUID
+
+
+class PaperVersion(PaperVersionBase, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    paper_id: uuid.UUID = Field(foreign_key="paper.id")
+    submitted_at: datetime = Field(default_factory=datetime.utcnow)
+    paper: Paper = Relationship(back_populates="versions")
+
+
+class PaperVersionPublic(PaperVersionBase):
+    id: uuid.UUID
+    paper_id: uuid.UUID
+    submitted_at: datetime
+
+
+# =============================================================================
+# PaperAuthor - Links authors (Person) to papers with ordering
+# =============================================================================
+
+
+class PaperAuthorBase(SQLModel):
+    author_position: int = Field(ge=1)
+    is_corresponding: bool = Field(default=False)
+
+
+class PaperAuthorCreate(PaperAuthorBase):
+    paper_id: uuid.UUID
+    person_id: uuid.UUID
+
+
+class PaperAuthor(PaperAuthorBase, table=True):
+    paper_id: uuid.UUID = Field(foreign_key="paper.id", primary_key=True)
+    person_id: uuid.UUID = Field(foreign_key="person.id", primary_key=True)
+    paper: Paper = Relationship(back_populates="authors")
+    person: Person = Relationship()
+
+
+class PaperAuthorPublic(PaperAuthorBase):
+    paper_id: uuid.UUID
+    person_id: uuid.UUID
+
+
+# =============================================================================
 # User - Login account (authentication)
 # Linked to Person for public profile. Template originally called this "User",
 # will rename to "LoginAccount" after vertical slice is working.
