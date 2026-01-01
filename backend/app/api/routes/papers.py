@@ -31,6 +31,12 @@ def submit_paper(
         )
 
     author_person_ids = [a.person_id for a in submission.authors]
+    if current_user.person_id not in author_person_ids:
+        raise HTTPException(
+            status_code=400,
+            detail="Submitter must be listed as an author",
+        )
+
     existing_persons = session.exec(
         select(Person).where(Person.id.in_(author_person_ids))
     ).all()
@@ -75,7 +81,12 @@ def list_papers(
     if current_user.is_superuser:
         count_statement = select(func.count()).select_from(Paper)
         count = session.exec(count_statement).one()
-        statement = select(Paper).offset(skip).limit(limit)
+        statement = (
+            select(Paper)
+            .order_by(Paper.created_at.desc())
+            .offset(skip)
+            .limit(limit)
+        )
         papers = session.exec(statement).all()
     else:
         if not current_user.person_id:
@@ -92,6 +103,7 @@ def list_papers(
             select(Paper)
             .join(PaperAuthor)
             .where(PaperAuthor.person_id == current_user.person_id)
+            .order_by(Paper.created_at.desc())
             .offset(skip)
             .limit(limit)
         )
