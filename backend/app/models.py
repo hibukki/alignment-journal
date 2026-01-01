@@ -384,6 +384,7 @@ class User(UserBase, table=True):
 # Properties to return via API, id is always required
 class UserPublic(UserBase):
     id: uuid.UUID
+    person_id: uuid.UUID | None = None
 
 
 class UsersPublic(SQLModel):
