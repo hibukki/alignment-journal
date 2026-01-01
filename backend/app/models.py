@@ -99,6 +99,19 @@ class PapersPublic(SQLModel):
     count: int
 
 
+class AuthorInput(SQLModel):
+    person_id: uuid.UUID
+    is_corresponding: bool = False
+
+
+class PaperSubmission(SQLModel):
+    """Input for submitting a new paper with its first version and authors."""
+    title: str = Field(min_length=1, max_length=500)
+    abstract: str | None = Field(default=None, max_length=10000)
+    pdf_url: str = Field(max_length=2000)
+    authors: list[AuthorInput] = Field(min_length=1)
+
+
 # =============================================================================
 # PaperVersion - Each revision of a paper
 # =============================================================================
