@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, PrivateCreateUserData, PrivateCreateUserResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
+import type { ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, PapersSubmitPaperData, PapersSubmitPaperResponse, PapersListPapersData, PapersListPapersResponse, PapersGetPaperData, PapersGetPaperResponse, PapersAssignEditorData, PapersAssignEditorResponse, PapersMakeDeskDecisionData, PapersMakeDeskDecisionResponse, PapersInviteReviewerData, PapersInviteReviewerResponse, PapersMakeDecisionData, PapersMakeDecisionResponse, PrivateCreateUserData, PrivateCreateUserResponse, ReviewerAssignmentsRespondToInvitationData, ReviewerAssignmentsRespondToInvitationResponse, ReviewerAssignmentsSubmitReviewData, ReviewerAssignmentsSubmitReviewResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
 
 export class ItemsService {
     /**
@@ -213,6 +213,172 @@ export class LoginService {
     }
 }
 
+export class PapersService {
+    /**
+     * Submit Paper
+     * Submit a new paper with its first version and authors.
+     * @param data The data for the request.
+     * @param data.requestBody
+     * @returns PaperPublic Successful Response
+     * @throws ApiError
+     */
+    public static submitPaper(data: PapersSubmitPaperData): CancelablePromise<PapersSubmitPaperResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/papers/',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * List Papers
+     * List papers. Authors see their papers, superusers see all.
+     * @param data The data for the request.
+     * @param data.skip
+     * @param data.limit
+     * @returns PapersPublic Successful Response
+     * @throws ApiError
+     */
+    public static listPapers(data: PapersListPapersData = {}): CancelablePromise<PapersListPapersResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/papers/',
+            query: {
+                skip: data.skip,
+                limit: data.limit
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Get Paper
+     * Get paper by ID.
+     * @param data The data for the request.
+     * @param data.paperId
+     * @returns PaperPublic Successful Response
+     * @throws ApiError
+     */
+    public static getPaper(data: PapersGetPaperData): CancelablePromise<PapersGetPaperResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/papers/{paper_id}',
+            path: {
+                paper_id: data.paperId
+            },
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Assign Editor
+     * Assign an editor to a paper. Only editors/admins can do this.
+     * @param data The data for the request.
+     * @param data.paperId
+     * @param data.requestBody
+     * @returns EditorAssignmentPublic Successful Response
+     * @throws ApiError
+     */
+    public static assignEditor(data: PapersAssignEditorData): CancelablePromise<PapersAssignEditorResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/papers/{paper_id}/editor-assignment',
+            path: {
+                paper_id: data.paperId
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Make Desk Decision
+     * Make a desk decision (proceed/reject) on a paper.
+     * @param data The data for the request.
+     * @param data.paperId
+     * @param data.requestBody
+     * @returns DeskDecisionPublic Successful Response
+     * @throws ApiError
+     */
+    public static makeDeskDecision(data: PapersMakeDeskDecisionData): CancelablePromise<PapersMakeDeskDecisionResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/papers/{paper_id}/desk-decision',
+            path: {
+                paper_id: data.paperId
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Invite Reviewer
+     * Invite a reviewer to review a paper version.
+     * @param data The data for the request.
+     * @param data.paperId
+     * @param data.versionId
+     * @param data.requestBody
+     * @returns ReviewerAssignmentPublic Successful Response
+     * @throws ApiError
+     */
+    public static inviteReviewer(data: PapersInviteReviewerData): CancelablePromise<PapersInviteReviewerResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/papers/{paper_id}/versions/{version_id}/reviewers',
+            path: {
+                paper_id: data.paperId,
+                version_id: data.versionId
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Make Decision
+     * Make a final decision (accept/reject/revise) on a paper version.
+     * @param data The data for the request.
+     * @param data.paperId
+     * @param data.versionId
+     * @param data.requestBody
+     * @returns DecisionPublic Successful Response
+     * @throws ApiError
+     */
+    public static makeDecision(data: PapersMakeDecisionData): CancelablePromise<PapersMakeDecisionResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/papers/{paper_id}/versions/{version_id}/decision',
+            path: {
+                paper_id: data.paperId,
+                version_id: data.versionId
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+}
+
 export class PrivateService {
     /**
      * Create User
@@ -226,6 +392,56 @@ export class PrivateService {
         return __request(OpenAPI, {
             method: 'POST',
             url: '/api/v1/private/users/',
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+}
+
+export class ReviewerAssignmentsService {
+    /**
+     * Respond To Invitation
+     * Reviewer accepts or declines an invitation.
+     * @param data The data for the request.
+     * @param data.assignmentId
+     * @param data.requestBody
+     * @returns ReviewerAssignmentPublic Successful Response
+     * @throws ApiError
+     */
+    public static respondToInvitation(data: ReviewerAssignmentsRespondToInvitationData): CancelablePromise<ReviewerAssignmentsRespondToInvitationResponse> {
+        return __request(OpenAPI, {
+            method: 'PATCH',
+            url: '/api/v1/reviewer-assignments/{assignment_id}',
+            path: {
+                assignment_id: data.assignmentId
+            },
+            body: data.requestBody,
+            mediaType: 'application/json',
+            errors: {
+                422: 'Validation Error'
+            }
+        });
+    }
+    
+    /**
+     * Submit Review
+     * Reviewer submits their review.
+     * @param data The data for the request.
+     * @param data.assignmentId
+     * @param data.requestBody
+     * @returns ReviewPublic Successful Response
+     * @throws ApiError
+     */
+    public static submitReview(data: ReviewerAssignmentsSubmitReviewData): CancelablePromise<ReviewerAssignmentsSubmitReviewResponse> {
+        return __request(OpenAPI, {
+            method: 'POST',
+            url: '/api/v1/reviewer-assignments/{assignment_id}/review',
+            path: {
+                assignment_id: data.assignmentId
+            },
             body: data.requestBody,
             mediaType: 'application/json',
             errors: {
