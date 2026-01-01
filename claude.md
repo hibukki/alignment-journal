@@ -7,6 +7,8 @@ This means:
 - Hopefully the setup is tidy, since the team that made that is really good
 - Maybe there are extra files in this project that only belong in the template. (it's ok to adjust)
 
-To lean how to use the template, see README.md.
+To lean how to make changes to the template, see README.md.
 If editing the backend, also read backend/readme.md.
 For the frontend, you guessed it, frontend/readme.md.
+
+On how to develop and run locally: development.md. Use the best practices here and say explicitly if something is wrong with them. Don't silently use workarounds, development.md needs to stay up to date
