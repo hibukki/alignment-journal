@@ -1,7 +1,69 @@
 import uuid
+from datetime import datetime
+from enum import Enum
+from typing import TYPE_CHECKING
 
 from pydantic import EmailStr
 from sqlmodel import Field, Relationship, SQLModel
+
+if TYPE_CHECKING:
+    from typing import Optional
+
+
+# =============================================================================
+# Person - Public profile for authors, reviewers, editors
+# Separate from User (login account). Someone can be a paper author without
+# having a login account (placeholder Person with email, linked on first login).
+# =============================================================================
+
+
+class PersonRole(str, Enum):
+    """Role determines what actions a person can take in the journal system."""
+    researcher = "researcher"  # Can submit papers, be listed as author
+    reviewer = "reviewer"      # Can be assigned to review papers
+    editor = "editor"          # Can make desk decisions, assign reviewers, make final decisions
+    admin = "admin"            # Full system access
+
+
+class PersonBase(SQLModel):
+    display_name: str = Field(max_length=255)
+    email: EmailStr | None = Field(default=None, max_length=255, index=True)
+    orcid: str | None = Field(default=None, max_length=19)  # Format: 0000-0000-0000-0000
+    role: PersonRole = Field(default=PersonRole.researcher)
+
+
+class PersonCreate(PersonBase):
+    pass
+
+
+class PersonUpdate(SQLModel):
+    display_name: str | None = Field(default=None, max_length=255)
+    email: EmailStr | None = Field(default=None, max_length=255)
+    orcid: str | None = Field(default=None, max_length=19)
+    role: PersonRole | None = None
+
+
+class Person(PersonBase, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    user: list["User"] = Relationship(back_populates="person")
+
+
+class PersonPublic(PersonBase):
+    id: uuid.UUID
+    created_at: datetime
+
+
+class PersonsPublic(SQLModel):
+    data: list[PersonPublic]
+    count: int
+
+
+# =============================================================================
+# User - Login account (authentication)
+# Linked to Person for public profile. Template originally called this "User",
+# will rename to "LoginAccount" after vertical slice is working.
+# =============================================================================
 
 
 # Shared properties
@@ -43,6 +105,8 @@ class UpdatePassword(SQLModel):
 class User(UserBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     hashed_password: str
+    person_id: uuid.UUID | None = Field(default=None, foreign_key="person.id")
+    person: Person | None = Relationship(back_populates="user")
     items: list["Item"] = Relationship(back_populates="owner", cascade_delete=True)
 
 
