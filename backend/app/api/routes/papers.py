@@ -12,6 +12,7 @@ from app.models import (
     DeskDecision,
     DeskDecisionCreate,
     DeskDecisionPublic,
+    DeskDecisionType,
     EditorAssignment,
     EditorAssignmentCreate,
     EditorAssignmentPublic,
@@ -233,6 +234,12 @@ def invite_reviewer(
     version = session.get(PaperVersion, version_id)
     if not version or version.paper_id != paper_id:
         raise HTTPException(status_code=404, detail="Paper version not found")
+
+    desk = session.exec(
+        select(DeskDecision).where(DeskDecision.paper_id == paper_id)
+    ).first()
+    if not desk or desk.decision != DeskDecisionType.proceed:
+        raise HTTPException(status_code=400, detail="Paper not approved for review")
 
     reviewer = session.get(Person, assignment.reviewer_person_id)
     if not reviewer:
