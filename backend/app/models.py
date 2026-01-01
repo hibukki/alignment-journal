@@ -154,6 +154,170 @@ class PaperAuthorPublic(PaperAuthorBase):
 
 
 # =============================================================================
+# EditorAssignment - Editor assigned to handle a paper
+# =============================================================================
+
+
+class EditorAssignment(SQLModel, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    paper_id: uuid.UUID = Field(foreign_key="paper.id", index=True)
+    editor_person_id: uuid.UUID = Field(foreign_key="person.id", index=True)
+    assigned_at: datetime = Field(default_factory=datetime.utcnow)
+    paper: Paper = Relationship()
+    editor: Person = Relationship()
+
+
+class EditorAssignmentCreate(SQLModel):
+    paper_id: uuid.UUID
+    editor_person_id: uuid.UUID
+
+
+class EditorAssignmentPublic(SQLModel):
+    id: uuid.UUID
+    paper_id: uuid.UUID
+    editor_person_id: uuid.UUID
+    assigned_at: datetime
+
+
+# =============================================================================
+# DeskDecision - Editor's initial proceed/reject decision
+# =============================================================================
+
+
+class DeskDecisionType(str, Enum):
+    proceed = "proceed"
+    reject = "reject"
+
+
+class DeskDecision(SQLModel, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    paper_id: uuid.UUID = Field(foreign_key="paper.id", index=True)
+    decision: DeskDecisionType
+    rationale: str | None = Field(default=None, max_length=5000)
+    decided_at: datetime = Field(default_factory=datetime.utcnow)
+    paper: Paper = Relationship()
+
+
+class DeskDecisionCreate(SQLModel):
+    paper_id: uuid.UUID
+    decision: DeskDecisionType
+    rationale: str | None = Field(default=None, max_length=5000)
+
+
+class DeskDecisionPublic(SQLModel):
+    id: uuid.UUID
+    paper_id: uuid.UUID
+    decision: DeskDecisionType
+    rationale: str | None
+    decided_at: datetime
+
+
+# =============================================================================
+# ReviewerAssignment - Reviewer invited to review a paper version
+# =============================================================================
+
+
+class ReviewerAssignmentStatus(str, Enum):
+    invited = "invited"
+    accepted = "accepted"
+    declined = "declined"
+    completed = "completed"
+
+
+class ReviewerAssignmentBase(SQLModel):
+    identity_confidential: bool = Field(default=False)
+
+
+class ReviewerAssignment(ReviewerAssignmentBase, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    paper_version_id: uuid.UUID = Field(foreign_key="paperversion.id", index=True)
+    reviewer_person_id: uuid.UUID = Field(foreign_key="person.id", index=True)
+    status: ReviewerAssignmentStatus = Field(default=ReviewerAssignmentStatus.invited)
+    invited_at: datetime = Field(default_factory=datetime.utcnow)
+    paper_version: PaperVersion = Relationship()
+    reviewer: Person = Relationship()
+
+
+class ReviewerAssignmentCreate(SQLModel):
+    paper_version_id: uuid.UUID
+    reviewer_person_id: uuid.UUID
+    identity_confidential: bool = False
+
+
+class ReviewerAssignmentUpdate(SQLModel):
+    status: ReviewerAssignmentStatus | None = None
+
+
+class ReviewerAssignmentPublic(ReviewerAssignmentBase):
+    id: uuid.UUID
+    paper_version_id: uuid.UUID
+    reviewer_person_id: uuid.UUID
+    status: ReviewerAssignmentStatus
+    invited_at: datetime
+
+
+# =============================================================================
+# Review - Reviewer's submitted review
+# =============================================================================
+
+
+class ReviewBase(SQLModel):
+    content: str = Field(max_length=50000)
+
+
+class Review(ReviewBase, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    assignment_id: uuid.UUID = Field(foreign_key="reviewerassignment.id", unique=True)
+    submitted_at: datetime = Field(default_factory=datetime.utcnow)
+    assignment: ReviewerAssignment = Relationship()
+
+
+class ReviewCreate(SQLModel):
+    assignment_id: uuid.UUID
+    content: str = Field(max_length=50000)
+
+
+class ReviewPublic(ReviewBase):
+    id: uuid.UUID
+    assignment_id: uuid.UUID
+    submitted_at: datetime
+
+
+# =============================================================================
+# Decision - Editor's final decision on a paper version
+# =============================================================================
+
+
+class DecisionType(str, Enum):
+    accept = "accept"
+    reject = "reject"
+    revise = "revise"
+
+
+class Decision(SQLModel, table=True):
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    paper_version_id: uuid.UUID = Field(foreign_key="paperversion.id", index=True)
+    decision: DecisionType
+    rationale: str | None = Field(default=None, max_length=5000)
+    decided_at: datetime = Field(default_factory=datetime.utcnow)
+    paper_version: PaperVersion = Relationship()
+
+
+class DecisionCreate(SQLModel):
+    paper_version_id: uuid.UUID
+    decision: DecisionType
+    rationale: str | None = Field(default=None, max_length=5000)
+
+
+class DecisionPublic(SQLModel):
+    id: uuid.UUID
+    paper_version_id: uuid.UUID
+    decision: DecisionType
+    rationale: str | None
+    decided_at: datetime
+
+
+# =============================================================================
 # User - Login account (authentication)
 # Linked to Person for public profile. Template originally called this "User",
 # will rename to "LoginAccount" after vertical slice is working.
