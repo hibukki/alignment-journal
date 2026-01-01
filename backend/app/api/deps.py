@@ -11,7 +11,7 @@ from sqlmodel import Session
 from app.core import security
 from app.core.config import settings
 from app.core.db import engine
-from app.models import TokenPayload, User
+from app.models import Person, PersonRole, TokenPayload, User
 
 reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V1_STR}/login/access-token"
@@ -55,3 +55,18 @@ def get_current_active_superuser(current_user: CurrentUser) -> User:
             status_code=403, detail="The user doesn't have enough privileges"
         )
     return current_user
+
+
+def get_current_editor(session: SessionDep, current_user: CurrentUser) -> User:
+    """Require user to have editor or admin role."""
+    if current_user.is_superuser:
+        return current_user
+    if not current_user.person_id:
+        raise HTTPException(status_code=403, detail="Not enough privileges")
+    person = session.get(Person, current_user.person_id)
+    if not person or person.role not in (PersonRole.editor, PersonRole.admin):
+        raise HTTPException(status_code=403, detail="Not enough privileges")
+    return current_user
+
+
+CurrentEditor = Annotated[User, Depends(get_current_editor)]
