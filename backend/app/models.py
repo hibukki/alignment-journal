@@ -115,7 +115,7 @@ class PaperVersionCreate(PaperVersionBase):
 
 class PaperVersion(PaperVersionBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    paper_id: uuid.UUID = Field(foreign_key="paper.id")
+    paper_id: uuid.UUID = Field(foreign_key="paper.id", index=True)
     submitted_at: datetime = Field(default_factory=datetime.utcnow)
     paper: Paper = Relationship(back_populates="versions")
 
@@ -143,7 +143,7 @@ class PaperAuthorCreate(PaperAuthorBase):
 
 class PaperAuthor(PaperAuthorBase, table=True):
     paper_id: uuid.UUID = Field(foreign_key="paper.id", primary_key=True)
-    person_id: uuid.UUID = Field(foreign_key="person.id", primary_key=True)
+    person_id: uuid.UUID = Field(foreign_key="person.id", primary_key=True, index=True)
     paper: Paper = Relationship(back_populates="authors")
     person: Person = Relationship()
 
