@@ -678,6 +678,70 @@ export const ReviewerAssignmentUpdateSchema = {
     title: 'ReviewerAssignmentUpdate'
 } as const;
 
+export const ReviewerAssignmentWithPaperSchema = {
+    properties: {
+        identity_confidential: {
+            type: 'boolean',
+            title: 'Identity Confidential',
+            default: false
+        },
+        id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Id'
+        },
+        paper_version_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Paper Version Id'
+        },
+        reviewer_person_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Reviewer Person Id'
+        },
+        status: {
+            '$ref': '#/components/schemas/ReviewerAssignmentStatus'
+        },
+        invited_at: {
+            type: 'string',
+            format: 'date-time',
+            title: 'Invited At'
+        },
+        paper_title: {
+            type: 'string',
+            title: 'Paper Title'
+        },
+        paper_id: {
+            type: 'string',
+            format: 'uuid',
+            title: 'Paper Id'
+        }
+    },
+    type: 'object',
+    required: ['id', 'paper_version_id', 'reviewer_person_id', 'status', 'invited_at', 'paper_title', 'paper_id'],
+    title: 'ReviewerAssignmentWithPaper'
+} as const;
+
+export const ReviewerAssignmentsPublicSchema = {
+    properties: {
+        data: {
+            items: {
+                '$ref': '#/components/schemas/ReviewerAssignmentWithPaper'
+            },
+            type: 'array',
+            title: 'Data'
+        },
+        count: {
+            type: 'integer',
+            title: 'Count'
+        }
+    },
+    type: 'object',
+    required: ['data', 'count'],
+    title: 'ReviewerAssignmentsPublic'
+} as const;
+
 export const TokenSchema = {
     properties: {
         access_token: {

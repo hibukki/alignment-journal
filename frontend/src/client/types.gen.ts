@@ -143,10 +143,26 @@ export type ReviewerAssignmentPublic = {
     invited_at: string;
 };
 
+export type ReviewerAssignmentsPublic = {
+    data: Array<ReviewerAssignmentWithPaper>;
+    count: number;
+};
+
 export type ReviewerAssignmentStatus = 'invited' | 'accepted' | 'declined' | 'completed';
 
 export type ReviewerAssignmentUpdate = {
     status?: (ReviewerAssignmentStatus | null);
+};
+
+export type ReviewerAssignmentWithPaper = {
+    identity_confidential?: boolean;
+    id: string;
+    paper_version_id: string;
+    reviewer_person_id: string;
+    status: ReviewerAssignmentStatus;
+    invited_at: string;
+    paper_title: string;
+    paper_id: string;
 };
 
 export type ReviewPublic = {
@@ -325,6 +341,8 @@ export type PrivateCreateUserData = {
 };
 
 export type PrivateCreateUserResponse = (UserPublic);
+
+export type ReviewerAssignmentsListMyAssignmentsResponse = (ReviewerAssignmentsPublic);
 
 export type ReviewerAssignmentsRespondToInvitationData = {
     assignmentId: string;

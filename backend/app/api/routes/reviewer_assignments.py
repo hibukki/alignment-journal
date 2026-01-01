@@ -10,12 +10,50 @@ from app.models import (
     ReviewCreate,
     ReviewerAssignment,
     ReviewerAssignmentPublic,
+    ReviewerAssignmentsPublic,
     ReviewerAssignmentStatus,
     ReviewerAssignmentUpdate,
+    ReviewerAssignmentWithPaper,
     ReviewPublic,
 )
 
 router = APIRouter(prefix="/reviewer-assignments", tags=["reviewer-assignments"])
+
+
+@router.get("/", response_model=ReviewerAssignmentsPublic)
+def list_my_assignments(
+    *,
+    session: SessionDep,
+    current_user: CurrentUser,
+) -> Any:
+    """List current user's reviewer assignments."""
+    if not current_user.person_id:
+        raise HTTPException(status_code=403, detail="User has no person profile")
+
+    assignments = session.exec(
+        select(ReviewerAssignment)
+        .where(ReviewerAssignment.reviewer_person_id == current_user.person_id)
+        .order_by(ReviewerAssignment.invited_at.desc())
+    ).all()
+
+    result = []
+    for a in assignments:
+        paper_version = a.paper_version
+        paper = paper_version.paper
+        result.append(
+            ReviewerAssignmentWithPaper(
+                id=a.id,
+                paper_version_id=a.paper_version_id,
+                reviewer_person_id=a.reviewer_person_id,
+                status=a.status,
+                invited_at=a.invited_at,
+                identity_confidential=a.identity_confidential,
+                paper_title=paper.title,
+                paper_id=paper.id,
+            )
+        )
+
+    return ReviewerAssignmentsPublic(data=result, count=len(result))
 
 
 @router.patch("/{assignment_id}", response_model=ReviewerAssignmentPublic)

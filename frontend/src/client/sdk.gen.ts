@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, PapersSubmitPaperData, PapersSubmitPaperResponse, PapersListPapersData, PapersListPapersResponse, PapersGetPaperData, PapersGetPaperResponse, PapersAssignEditorData, PapersAssignEditorResponse, PapersMakeDeskDecisionData, PapersMakeDeskDecisionResponse, PapersInviteReviewerData, PapersInviteReviewerResponse, PapersMakeDecisionData, PapersMakeDecisionResponse, PrivateCreateUserData, PrivateCreateUserResponse, ReviewerAssignmentsRespondToInvitationData, ReviewerAssignmentsRespondToInvitationResponse, ReviewerAssignmentsSubmitReviewData, ReviewerAssignmentsSubmitReviewResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
+import type { ItemsReadItemsData, ItemsReadItemsResponse, ItemsCreateItemData, ItemsCreateItemResponse, ItemsReadItemData, ItemsReadItemResponse, ItemsUpdateItemData, ItemsUpdateItemResponse, ItemsDeleteItemData, ItemsDeleteItemResponse, LoginLoginAccessTokenData, LoginLoginAccessTokenResponse, LoginTestTokenResponse, LoginRecoverPasswordData, LoginRecoverPasswordResponse, LoginResetPasswordData, LoginResetPasswordResponse, LoginRecoverPasswordHtmlContentData, LoginRecoverPasswordHtmlContentResponse, PapersSubmitPaperData, PapersSubmitPaperResponse, PapersListPapersData, PapersListPapersResponse, PapersGetPaperData, PapersGetPaperResponse, PapersAssignEditorData, PapersAssignEditorResponse, PapersMakeDeskDecisionData, PapersMakeDeskDecisionResponse, PapersInviteReviewerData, PapersInviteReviewerResponse, PapersMakeDecisionData, PapersMakeDecisionResponse, PrivateCreateUserData, PrivateCreateUserResponse, ReviewerAssignmentsListMyAssignmentsResponse, ReviewerAssignmentsRespondToInvitationData, ReviewerAssignmentsRespondToInvitationResponse, ReviewerAssignmentsSubmitReviewData, ReviewerAssignmentsSubmitReviewResponse, UsersReadUsersData, UsersReadUsersResponse, UsersCreateUserData, UsersCreateUserResponse, UsersReadUserMeResponse, UsersDeleteUserMeResponse, UsersUpdateUserMeData, UsersUpdateUserMeResponse, UsersUpdatePasswordMeData, UsersUpdatePasswordMeResponse, UsersRegisterUserData, UsersRegisterUserResponse, UsersReadUserByIdData, UsersReadUserByIdResponse, UsersUpdateUserData, UsersUpdateUserResponse, UsersDeleteUserData, UsersDeleteUserResponse, UtilsTestEmailData, UtilsTestEmailResponse, UtilsHealthCheckResponse } from './types.gen';
 
 export class ItemsService {
     /**
@@ -402,6 +402,19 @@ export class PrivateService {
 }
 
 export class ReviewerAssignmentsService {
+    /**
+     * List My Assignments
+     * List current user's reviewer assignments.
+     * @returns ReviewerAssignmentsPublic Successful Response
+     * @throws ApiError
+     */
+    public static listMyAssignments(): CancelablePromise<ReviewerAssignmentsListMyAssignmentsResponse> {
+        return __request(OpenAPI, {
+            method: 'GET',
+            url: '/api/v1/reviewer-assignments/'
+        });
+    }
+    
     /**
      * Respond To Invitation
      * Reviewer accepts or declines an invitation.

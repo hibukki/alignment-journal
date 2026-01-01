@@ -269,6 +269,16 @@ class ReviewerAssignmentPublic(ReviewerAssignmentBase):
     invited_at: datetime
 
 
+class ReviewerAssignmentWithPaper(ReviewerAssignmentPublic):
+    paper_title: str
+    paper_id: uuid.UUID
+
+
+class ReviewerAssignmentsPublic(SQLModel):
+    data: list[ReviewerAssignmentWithPaper]
+    count: int
+
+
 # =============================================================================
 # Review - Reviewer's submitted review
 # =============================================================================
