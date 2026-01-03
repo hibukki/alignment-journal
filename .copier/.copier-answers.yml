@@ -1,0 +1,13 @@
+_src_path: https://github.com/fastapi/full-stack-fastapi-template.git
+_commit: 2e0db3f9b410cadceb7335017ab3324e938a98d0
+project_name: Alignment Journal
+stack_name: alignment-journal
+secret_key: changethis
+first_superuser: admin@example.com
+first_superuser_password: changethis
+smtp_host: ""
+smtp_user: ""
+smtp_password: ""
+emails_from_email: info@example.com
+postgres_password: changethis
+sentry_dsn: ""
